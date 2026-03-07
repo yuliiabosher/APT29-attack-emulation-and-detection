@@ -2,7 +2,7 @@ facts:
 - trait: server
   value: 192.0.2.10
 - trait: profile_user
-  value: Administrator
+  value: yulia
 - trait: remote.file.share
   value: 192.0.2.10
 - trait: server
