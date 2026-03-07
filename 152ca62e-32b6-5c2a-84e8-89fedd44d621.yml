@@ -5,7 +5,7 @@ facts:
   trait: server
   name: server
   value: 192.0.2.10
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -18,7 +18,7 @@ facts:
   trait: profile_user
   name: profile_user
   value: yulia
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -31,7 +31,7 @@ facts:
   trait: remote.file.share
   name: remote.file.share
   value: 192.0.2.10
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -44,7 +44,7 @@ facts:
   trait: server
   name: server
   value: 127.0.0.1
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -57,7 +57,7 @@ facts:
   trait: remote.file.share
   name: remote.file.share
   value: 192.0.2.20
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -70,7 +70,7 @@ facts:
   trait: pivot_machine_hostname
   name: pivot_machine_hostname
   value: pivothost
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -83,7 +83,7 @@ facts:
   trait: user.session.id
   name: user.session.id
   value: '1'
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED
@@ -96,7 +96,7 @@ facts:
   trait: profile_user_password
   name: profile_user_password
   value: Password123!
-  created: '2026-03-07T20:35:11Z'
+  created: '2026-03-07T21:51:07Z'
   score: 1
   source: 152ca62e-32b6-5c2a-84e8-89fedd44d621
   origin_type: IMPORTED

