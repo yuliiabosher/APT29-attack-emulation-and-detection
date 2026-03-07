@@ -65,7 +65,7 @@ function Invoke-MultipartFormDataUpload
         $packageFileStream = New-Object System.IO.FileStream @($InFile, [System.IO.FileMode]::Open)
 
         $contentDispositionHeaderValue = New-Object System.Net.Http.Headers.ContentDispositionHeaderValue "form-data"
-        $contentDispositionHeaderValue.Name = "file"
+        $contentDispositionHeaderValue.Name = "package"
         $contentDispositionHeaderValue.FileName = (Split-Path $InFile -leaf)
 
         $streamContent = New-Object System.Net.Http.StreamContent $packageFileStream
