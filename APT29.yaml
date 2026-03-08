@@ -18,7 +18,7 @@
   technique:
     attack_id: T1036.002
     name: "Masquerading: Right-to-Left Override"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/8uploads/2019/10/15163405/CosmicDuke.pdf"
+  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2019/10/15163405/CosmicDuke.pdf"
   procedure_group: procedure_execution
   procedure_step: "1.A"
   platforms:
