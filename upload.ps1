@@ -59,13 +59,14 @@ function Invoke-MultipartFormDataUpload
             $httpClient = New-Object System.Net.Http.Httpclient $httpClientHandler
         }
 
+        $httpClient.DefaultRequestHeaders.Add("KEY", "ADMIN123") 
         $httpClient.Timeout = 18000000000
         #$httpClient.DefaultRequestHeaders.Add("AUTHORIZATION", "Basic YTph")
 
         $packageFileStream = New-Object System.IO.FileStream @($InFile, [System.IO.FileMode]::Open)
 
         $contentDispositionHeaderValue = New-Object System.Net.Http.Headers.ContentDispositionHeaderValue "form-data"
-        $contentDispositionHeaderValue.Name = "package"
+        $contentDispositionHeaderValue.Name = "file"
         $contentDispositionHeaderValue.FileName = (Split-Path $InFile -leaf)
 
         $streamContent = New-Object System.Net.Http.StreamContent $packageFileStream
