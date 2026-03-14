@@ -1,18 +1,8 @@
 facts:
 - trait: server
-  value: 10.0.17.3
+  value: 192.168.1.45
 - trait: profile_user
   value: Administrator
-- trait: server
-  value: 192.0.2.10
-- trait: server
-  value: 192.168.1.45
-- trait: pivot_machine_hostname
-  value: DESKTOP-22K14OG
-- trait: user.session.id
-  value: '1'
-- trait: remote.file.share
-  value: 10.0.17.4
 - trait: profile_user_password
   value: Password123!
 id: 152ca62e-32b6-5c2a-84e8-89fedd44d621
